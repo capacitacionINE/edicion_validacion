@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Proceso de acompañamiento coyuntural y automatización de la Encuesta Nacional de Empleo</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="" />
+    <meta name="date" content="2020-08-25" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+class: center, middle
+
+.linea-superior[]
+.linea-inferior[]
+
+
+&lt;img src="imagenes/logo_portada2.png" width="200" /&gt;
+
+
+## Taller de R
+
+## Validación y edición de datos
+
+## Proyecto Estatégico de Servicios Compartidos
+
+### agosto 2020
+
+
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Objetivo del taller
+
+&lt;br&gt;
+&lt;br&gt;
+.center[
+
+## *Entregar los conceptos necesarios para comprender el script de validación que veremos en la próxima sesión*
+]
+
+--
+
+&lt;br&gt;
+.center[
+## Nos enfocaremos en tareas muy concretas, relacionadas con nuestro quehacer 
+]
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Asumiremos algunas cosas
+
+## Todos tienen algo de experiencia usando `R`
+
+--
+
+- Todos saben lo que es un script y han trabajado de esta forma 
+
+--
+
+- Han trabajado con `dataframes` 
+
+--
+
+- Todos han instalado paquetes y saben cómo cargarlos en la sesión
+
+--
+
+- Todos han trabajado con datos de encuestas de hogares (Stata, SPSS, Python, Excel)
+
+--
+
+
+- Todos saben cómo funciona un ciclo for (en Stata, R, Python o lo que sea)
+
+--
+
+&lt;br&gt;
+
+.center[
+## Si no manejan alguno de estos conceptos, no se preocupen. Haremos lo posible para que nadie quede atrás 
+&lt;img src="imagenes/emoticon.PNG" width="100" /&gt;
+
+
+]
+
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Contenidos de hoy
+
+- Funciones básicas de `dplyr` para editar datos
+
+--
+
+- Encadenamiento de instrucciones
+
+--
+
+- Explicación (veloz) del objeto lista 
+
+--
+
+- Introducción a funcionales con `purrr` 
+
+--
+
+.center[
+## El tiempo corre, así que manos a la obra
+]
+
+.center[
+&lt;img src="https://media.giphy.com/media/26n6xBpxNXExDfuKc/giphy.gif" width="400" /&gt;
+]
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# ¿Qué es dplyr y tidyverse?
+
+&lt;br&gt;
+
+.center[
+&lt;img src="imagenes/paquetes.PNG" width="600" /&gt;
+]
+
+--
+
+## Paquetes que comparten una filosofía
+
+--
+
+## Es importante limitarnos a este set de herramientas
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Principales funciones de dplyr
+
+- `arrange`: ordena filas, usando algún criterio
+
+- `filter`: selecciona filas, usando algún criterio
+
+- `mutate`: crea variables a partir de las existentes
+
+- `group_by`: agrupa filas, usando algún criterio (similar a bys de Stata)
+
+- `summarise`: reduce cada grupo a una fila, mediante el cálculo de una medida agregada
+
+- `joins`: une filas de distintas tablas, usando una llave (similar a merge de Stata)
+
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Principales funciones de dplyr
+
+Haremos una serie de procedimientos para ordenar una base de datos
+
+Lo primero que haremos es seleccionar a la subpoblación que nos interesa: **personas adultas ocupadas**
+
+--
+
+
+```r
+library(tidyverse);library(haven)
+
+personas &lt;- read_dta("data/base-personas-viii-epf-(stata).dta")
+names(personas) &lt;- tolower(names(personas)) #dejar nombres en minúscula
+*ocup_adultos &lt;- filter(personas, edad &gt;= 18 &amp; cae == 1 )
+table(ocup_adultos$cae)
+```
+
+```
+## 
+##     1 
+## 22519
+```
+
+--
+
+El primer argumento de `filter` es un `dataframe` (personas)
+
+--
+
+El segundo argumento es una condición (edad &gt;= 18 &amp; cae == 1 )
+
+--
+
+Noten que en `filter` las variables fueron llamadas sin el operador $ 
+
+--
+
+Podemos hacer la condición tan compleja como nosotros queramos
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Principales funciones de dplyr
+
+Quiero estimar una ecuación de salarios y necesito la edad al cuadrado. 
+
+También necesito construir los ingresos de la ocupación principal y una variable dummy para sexo, que valga 1 para los hombres y 0 para las mujeres
+
+--
+
+
+```r
+ocup_adultos &lt;-  mutate(ocup_adultos, 
+                        edad2 = edad * edad, #alternativamente edad**2 o edad^2
+                        ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd,
+                        sexo_d = if_else(sexo == 1, 1, 0)) 
+```
+
+--
+
+Cada variable se va separando por comas
+
+--
+
+La función `if_else` opera de la misma manera que en excel 
+
+--
+
+Ahora me gustaría construir una base de datos más compacta, solo con algunas columnas
+
+
+```r
+ocup_adultos &lt;- select(ocup_adultos, edad, edad2, sexo, ing, eduactual)
+```
+
+--
+
+Finalmente, quiero ordenar los datos de menor a mayor, según edad
+
+
+```r
+ocup_adultos &lt;- arrange(ocup_adultos, desc(edad))
+```
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Principales funciones de dplyr
+
+Ahora que tengo mis datos más o menos ordenados, quiero explorar un poco las variables 
+
+
+```r
+summarise(ocup_adultos, 
+          media_edad = mean(edad), 
+          media_ing = mean(ing))
+```
+
+```
+## # A tibble: 1 x 2
+##   media_edad media_ing
+##        &lt;dbl&gt;     &lt;dbl&gt;
+## 1       42.8   612393.
+```
+
+La función `summarise` compacta los datos en una fila, usando alguna función  
+
+--
+
+Debemos entender el nombre de manera literal, es decir, resumir 
+
+--
+
+.discussion[
+Todas las funciones de `dplyr` tienen como primer argumento un `dataframe` y luego la instrucción específica 
+]
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Principales funciones de dplyr
+
+## Uniendo todo...
+
+
+```r
+ocup_adultos &lt;- filter(personas, edad &gt;= 18 &amp; cae == 1 ) 
+table(ocup_adultos$cae)
+ocup_adultos &lt;-  mutate(ocup_adultos, 
+                   edad2 = edad * edad, #alternativamente edad**2 o edad^2
+                   ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd,
+                   sexo_d = if_else(sexo == 1, 1, 0)) 
+ocup_adultos &lt;- select(ocup_adultos, edad, edad2, sexo, ing, eduactual)
+ocup_adultos &lt;- arrange(ocup_adultos, desc(edad))
+summarise(ocup_adultos, media_edad = mean(edad), 
+          media_ing = mean(ing))
+```
+
+--
+
+.discussion[
+
+Esta sucesión de pasos funciona, sin embargo, no es la forma en la que usualmente trabajamos con `dplyr`
+
+En internet no es común ver este tipo de código
+]
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Encadenamiento de funciones
+
+El operador `%&gt;%` (*pipe*) se usa para concatenar funciones
+
+Usamos los (¿las?) *pipes* para pasar información de un proceso a otro
+
+--
+
+
+```r
+ocup_adultos &lt;- personas %&gt;% 
+* filter(edad &gt;= 18 &amp; cae == 1 ) %&gt;%
+  mutate(edad2 = edad * edad, 
+         ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd,
+         sexo_d = if_else(sexo == 1, 1, 0)) %&gt;%
+  select(edad, edad2, sexo, ing, eduactual) %&gt;%
+  arrange(desc(edad))
+```
+--
+
+Filtramos con `filter`
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Encadenamiento de funciones
+
+El operador `%&gt;%` (*pipe*) se usa para concatenar funciones
+
+Usamos los (¿las?) *pipes* para pasar información de un proceso a otro
+
+
+```r
+ocup_adultos &lt;- personas %&gt;% 
+  filter(edad &gt;= 18 &amp; cae == 1 ) %&gt;% 
+* mutate(edad2 = edad * edad,
+*        ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd,
+*        sexo_d = if_else(sexo == 1, 1, 0)) %&gt;%
+  select(edad, edad2, sexo, ing, eduactual) %&gt;% 
+  arrange(desc(edad))
+```
+
+Filtramos con `filter`
+
+Creamos variables con `mutate`
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Encadenamiento de funciones
+
+El operador `%&gt;%` (*pipe*) se usa para concatenar funciones
+
+Usamos los (¿las?) *pipes* para pasar información de un proceso a otro
+
+
+```r
+ocup_adultos &lt;- personas %&gt;% 
+  filter(edad &gt;= 18 &amp; cae == 1 ) %&gt;% 
+  mutate(edad2 = edad * edad, 
+         ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd,
+         sexo_d = if_else(sexo == 1, 1, 0)) %&gt;%
+* select(edad, edad2, sexo, ing, eduactual) %&gt;%
+  arrange(desc(edad))
+```
+
+Filtramos con `filter`
+
+Creamos variables con `mutate`
+
+Seleccionamos variables con `select`
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Encadenamiento de funciones
+
+El operador `%&gt;%` (*pipe*) se usa para concatenar funciones
+
+Usamos los (¿las?) *pipes* para pasar información de un proceso a otro
+
+
+```r
+ocup_adultos &lt;- personas %&gt;% 
+  filter(edad &gt;= 18 &amp; cae == 1 ) %&gt;% 
+  mutate(edad2 = edad * edad, 
+         ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd,
+         sexo_d = if_else(sexo == 1, 1, 0)) %&gt;%
+  select(edad, edad2, sexo, ing, eduactual) %&gt;% 
+* arrange(desc(edad))
+```
+
+Filtramos con `filter`
+
+Creamos variables con `mutate`
+
+Seleccionamos variables con `select`
+
+Ordenamos  con `arrange`
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# ¿Cómo funcionan los pipes?
+
+Podemos pensar en una secuencia de acciones:
+
+.pull-left[
+1. Sacar huevos del refigerador
+2. Poner huevos en la sartén con aceite
+3. Prender fuego
+4. Revolver huevos
+5. Comer
+
+]
+
+.pull-right[
+&lt;img src="imagenes/huevo.PNG" width="250"/&gt;
+]
+
+--
+
+Expresado en pseudo código
+
+
+```r
+comer(revolver(prender_fuego(poner_ensarten(sacar("huevos"), con = "aceite"))))
+```
+
+--
+
+Expresado con *pipes*
+
+
+```r
+sacar("huevos") %&gt;% 
+  poner_ensarten(con = "aceite") %&gt;% 
+  prender_fuego() %&gt;% 
+  revolver() %&gt;% 
+  comer()
+```
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Un poco más sobre los pipes
+
+
+Los *pipes* sirven para que nuestro código sea mucho más legible
+
+--
+
+Por una cuestión de estilo y legibilidad es deseable escribir las funciones hacia abajo
+
+
+&lt;img src="imagenes/correcto.PNG" width="50"/&gt;
+
+
+```r
+personas %&gt;% 
+  filter(edad &gt;= 18 &amp; cae == 1 ) %&gt;% 
+  select(edad, cae)
+```
+
+&lt;img src="imagenes/incorrecto.PNG" width="50"/&gt;
+
+
+```r
+personas %&gt;% filter(edad &gt;= 18 &amp; cae == 1 ) %&gt;% select(edad, cae)
+```
+
+--
+.center[
+&lt;img src="imagenes/shortcut.PNG" width="450" /&gt;
+]
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ahora les toca a ustedes
+
+Carguen la base de personas
+
+```r
+library(tidyverse);library(haven)
+personas &lt;- read_dta("data/base-personas-viii-epf-(stata).dta")
+names(personas) &lt;- tolower(names(personas)) #dejar nombres en minúscula
+```
+
+Intenten concatenar las siguientes instrucciones
+
+1. Filtrar solo a los hombres
+2. Crear una variable llamada joven que valga 1 si la persona es menor o igual 35 y 0, si es mayor.
+3. Seleccionar las siguientes variables: folio, edad, joven
+4. Asignar todo eso a un nuevo objeto llamado df
+
+Deberían basarse en el código de la lámina anterior
+
+--
+
+```r
+df &lt;- personas %&gt;% 
+  filter(sexo == 1) %&gt;% 
+  mutate(joven = if_else(edad &lt;= 35, 1, 0)) %&gt;% 
+  select(folio, edad, joven)
+```
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Principales funciones de dplyr
+
+En encuestas de hogares, usualmente queremos construir valores a nivel de hogar. Por ejemplo, **ingreso total**
+
+--
+
+Para ello, usamos la función `group_by`
+
+--
+
+.pull-left[
+![](https://i2.wp.com/cmdlinetips.com/wp-content/uploads/2018/02/split_apply_combine_example.jpg?resize=478%2C298)
+]
+
+.pull-right[
+
+- Primero `group_by` divide el *data frame*.
+
+- Luego opera una función con la data fragmentada.
+
+- Finalmente `group_by` vuelve a combinar los resultados.
+]
+
+--
+
+
+```r
+df &lt;- personas %&gt;% 
+  mutate(ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd) %&gt;% 
+* group_by(folio) %&gt;%
+* mutate(ing_hog = sum(ing))
+```
+--
+
+Todo lo que hagamos después de `group_by` va a ejecutarse sobre dicha agregación
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Principales funciones de dplyr
+
+Veamos otro ejemplo de `group_by`
+
+--
+
+Queremos calcular el ingreso promedio por hogar, según área de estimación
+
+--
+
+
+```r
+personas %&gt;% 
+  mutate(ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd) %&gt;% 
+  group_by(folio) %&gt;% 
+  mutate(ing_hog = sum(ing)) %&gt;%  
+* slice(1) %&gt;%
+* group_by(zona)  %&gt;%
+* summarise(media_zona = mean(ing_hog))
+```
+
+```
+## # A tibble: 2 x 2
+##                                zona media_zona
+##                           &lt;dbl+lbl&gt;      &lt;dbl&gt;
+## 1 1 [Gran Santiago]                    944790.
+## 2 2 [Resto de Capitales Regionales]    862610.
+```
+
+`slice` selecciona *n* filas de cada grupo. En este caso seleccionamos la primera
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ahora les toca a ustedes
+
+Usando la base de personas, calculemos la edad promedio, según sexo y zona. Para ello deben:
+
+1. Agrupar
+2. Calcular media
+
+**Pista**: la función `group_by` puede recibir *n* variables
+
+--
+
+
+```r
+personas %&gt;% 
+  group_by(sexo, zona) %&gt;% 
+  summarise(edad_media = mean(edad))
+```
+
+```
+## # A tibble: 4 x 3
+## # Groups:   sexo [2]
+##         sexo                              zona edad_media
+##    &lt;dbl+lbl&gt;                         &lt;dbl+lbl&gt;      &lt;dbl&gt;
+## 1 1 [Hombre] 1 [Gran Santiago]                       34.6
+## 2 1 [Hombre] 2 [Resto de Capitales Regionales]       34.5
+## 3 2 [Mujer]  1 [Gran Santiago]                       38.0
+## 4 2 [Mujer]  2 [Resto de Capitales Regionales]       37.1
+```
+
+
+
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Principales funciones de dplyr
+
+## Una tarea muy común es unir tablas  
+
+--
+
+No queremos que nos vaya a pasar...
+
+.center[
+&lt;img src="https://media.giphy.com/media/cFkiFMDg3iFoI/giphy.gif" width="350" /&gt;
+]
+
+--
+
+O esto...
+
+
+.center[
+&lt;img src="https://media0.giphy.com/media/P4TqKx6NHyLnO/giphy.gif?cid=3640f6095c91abd67a467174592b5512" width="350" /&gt;
+]
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Familia join
+
+--
+
+.pull-left[
+
+- `left_join`
+
+- `right_join`
+
+- `inner_join`
+
+- `full_join`
+
+- otros más
+
+]
+
+.pull-right[
+&lt;img src="imagenes/joins.PNG" width="1000" /&gt;
+]
+
+--
+
+Nosotros veremos únicamente `left_join` e `inner_join`, pero les recomiendo mucho revisar los otros tipos
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Familia join (left_join)
+
+.pull-left[
+.discussion[
+Conserva todas las filas de la base "de la izquierda"
+
+Excluye las filas del lado derecho que no hagan *match* 
+]
+]
+
+.pull-right[
+&lt;img src="imagenes/left_join.PNG" width="300" /&gt;
+]
+
+--
+
+Vamos a crear una base ficticia que esté a nivel de hogares
+
+```r
+hogares &lt;- personas %&gt;% 
+  group_by(folio) %&gt;% 
+  slice(1) %&gt;% 
+  select(folio, ing_total_hog_hd) 
+
+head(hogares, 2)
+```
+
+```
+## # A tibble: 2 x 2
+## # Groups:   folio [2]
+##   folio   ing_total_hog_hd
+##   &lt;chr&gt;              &lt;dbl&gt;
+## 1 00001-1         1588000 
+## 2 00002-1          670060.
+```
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Familia join (left_join)
+
+
+
+```r
+personas2 &lt;- personas %&gt;% 
+  left_join(hogares, by = "folio")
+```
+
+- Primer argumento: `dataframe` "de la izquerda"
+
+- Segundo argumento: `dataframe` "de la derecha"
+
+- Tercer argumento: llave que permite la unión
+
+--
+
+**Ojo**: cuando 2 columnas tienen el mismo nombre en ambas tablas, R agrega un sufijo
+
+
+```
+## # A tibble: 2 x 3
+*##   folio   ing_total_hog_hd.x ing_total_hog_hd.y
+##   &lt;chr&gt;                &lt;dbl&gt;              &lt;dbl&gt;
+## 1 00001-1            1588000            1588000
+## 2 00001-1            1588000            1588000
+```
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Familia join (left_join)
+
+Vamos a agregar nuevos registros a la tabla de la derecha y hacemos `left_join`
+
+--
+
+
+```r
+hogares_alterado &lt;- hogares %&gt;% 
+  bind_rows(data.frame(folio = c("99999999999-1", "999999999999-99"), 
+                       ing_total_hog_hd = c(1, 2)))
+
+personas2 &lt;- personas %&gt;% 
+  left_join(hogares_alterado, by = "folio")
+
+dim(personas2)[1]
+dim(personas)[1]
+```
+
+¿personas2 y personas tendrán igual o distinto número de filas?
+
+--
+
+
+```
+## [1] 48308
+```
+
+```
+## [1] 48308
+```
+
+--
+
+Seguimos teniendo la misma cantidad de filas 
+
+`left_join` descarta los registros de la derecha que no hacen match
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Familia join (inner_join)
+
+.pull-left[
+.discussion[
+
+`inner_join` conserva solo las filas que coinciden en ambas tablas 
+
+Es posible que las filas de la tabla final no coincida con ninguna de las originales 
+
+]
+]
+.pull-right[
+&lt;img src="imagenes/inner_join.PNG" width="300" /&gt;
+]
+
+--
+
+Vamos a seleccionar aleatoriamente filas de ambas tablas
+
+```r
+set.seed(123)
+hogares_alterado &lt;- hogares %&gt;%
+  ungroup() %&gt;% 
+  slice_sample(prop = 0.5)
+set.seed(123)  
+personas_alterado &lt;- personas %&gt;% 
+  ungroup() %&gt;% 
+  slice_sample(prop = 0.5)
+
+l1 &lt;- length(unique(hogares_alterado$folio))
+l2 &lt;- length(unique(personas_alterado$folio))
+c(l1, l2)
+```
+
+```
+## [1]  7619 12467
+```
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Familia join (inner_join)
+
+Hacemos `inner_join` para ver qué ocurre
+
+
+```r
+personas2 &lt;- personas_alterado %&gt;% 
+  inner_join(hogares_alterado, by = "folio")
+
+length(unique(personas2))
+```
+
+```
+## [1] 248
+```
+
+--
+
+Solo 248 hogares se mantienen en la tabla final
+
+--
+
+**Recomendación**: inner_join es un poco lento. Se puede reemplazar por `left_join` y `filter`
+
+---
+.linea-superior[]
+.linea-inferior[]
+
+
+## Algunas referencias para seguir aprendiendo  `dplyr`
+
+- [R for data science](https://r4ds.had.co.nz/relational-data.html) (disponible en español)
+
+- [Torpedos](https://rstudio.com/resources/cheatsheets/) (varios tópicos)
+
+- [Statistical Inference via Data Science](https://moderndive.com/3-wrangling.html) 
+
+- Para cosas puntuales usen [stackoverflow](https://es.stackoverflow.com/) en inglés
+
+--
+
+Sugerencia para *googlear*: "data wrangling dplyr"
+
+---
+.linea-superior[]
+.linea-inferior[]
+
+.texto_intermedio[
+Pasemos a ver qué son las listas
+
+]
+
+.center[
+&lt;img src="imagenes/listas.PNG" width="600" /&gt;
+]
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Aprendiendo sobre listas
+
+Las listas son uno de los tipos de datos fundamentales en `R` 
+
+--
+
+Tienen una gran flexibilidad
+
+--
+
+Nos permiten almacenar datos de diferente tipo y longitud
+
+
+
+```r
+mi_lista &lt;- list(c(1,2,3), "Mingus", personas)
+length(mi_lista)
+```
+
+```
+## [1] 3
+```
+--
+Podemos acceder a los elementos de nuestra lista a través de sus índices
+
+--
+
+¿Qué creen que va a devolver esta línea de código?
+
+
+```r
+mi_lista[[2]]
+```
+--
+
+```
+## [1] "Mingus"
+```
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Aprendiendo sobre listas
+
+También podemos acceder a lo que sea que contengan los índices
+
+
+```r
+mi_lista[[1]][3]
+```
+
+```
+## [1] 3
+```
+--
+
+Y además transformar los elementos dentro de la lista
+
+
+```r
+mi_lista[[1]][3] &lt;- 99
+mi_lista[[1]]
+```
+
+```
+## [1]  1  2 99
+```
+
+--
+
+Para poner nombres a la lista podemos hacer lo siguiente
+
+
+```r
+names(mi_lista) &lt;- c("uno", "dos", "tres")
+mi_lista[["uno"]]
+```
+
+```
+## [1]  1  2 99
+```
+
+```r
+mi_lista$uno
+```
+
+```
+## [1]  1  2 99
+```
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Introducción a funcionales con purrr
+
+*To become significantly more reliable, code must become more transparent. In particular, nested conditions and loops must be viewed with great suspicion. Complicated control flows confuse programmers. Messy code often hides bugs.*
+
+-Bjarne Stroustrup (creador de C++)
+
+--
+
+Las funcionales (functionals) son funciones que reciben como argumento otra función 
+
+
+
+```r
+random &lt;- function(f) f(runif(10))
+random(mean)
+```
+
+```
+## [1] 0.5575298
+```
+--
+
+.pull-left[
+&lt;img src="https://media.giphy.com/media/uYgYvxxhCf3e8/giphy.gif" width="300" /&gt;
+]
+
+.pull-right[
+Cuando vi esto por primera vez, me sentí así.
+]
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Introducción a funcionales con purrr
+
+
+¿Alguno de ustedes tiene una idea de qué hace este código?
+
+
+```r
+for (i in 1:10) {
+  print(i)
+}
+```
+
+--
+
+Si entienden este código, la mitad del camino está recorrido en nuestro estudio de las funcionales
+
+
+
+
+
+---
+
+class: center, middle
+
+.linea-superior[]
+.linea-inferior[]
+&lt;img src="imagenes/logo_portada2.png" width="200" /&gt;
+
+
+
+## Gracias
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
