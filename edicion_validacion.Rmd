@@ -87,10 +87,6 @@ background-position: 100% 0%
 
 --
 
-- Todos han instalado paquetes y saben cómo cargarlos en la sesión
-
---
-
 - Todos han trabajado con datos de encuestas de hogares (Stata, SPSS, Python, Excel)
 
 --
@@ -105,8 +101,6 @@ background-position: 100% 0%
 .center[
 ## Si no manejan alguno de estos conceptos, no se preocupen. Haremos lo posible para que nadie quede atrás 
 <img src="imagenes/emoticon.PNG" width="100" />
-
-
 ]
 
 
@@ -164,6 +158,38 @@ background-position: 100% 0%
 --
 
 ## Es importante limitarnos a este set de herramientas
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Diferencia entre dplyr y R base
+
+Seleccionemos las mujeres mayores de 18 de una base de datos, conservando solo las columnas de sexo y edad
+
+Con `R` base
+
+```{r, eval=FALSE}
+df <- datos[datos$sexo == 2 & datos$edad > 18, c("sexo", "edad")]
+```
+
+
+--
+
+Con `dplyr`
+
+```{r, eval=FALSE}
+datos %>% 
+  filter(sexo == 2 & edad > 18) %>% 
+  select(sexo, edad)
+```
+
+
+--
+
+Si cada uno de nosotros elige su propio estilo, la comunicación se hace muy difícil
+
 
 ---
 
@@ -887,6 +913,35 @@ Solo 248 hogares se mantienen en la tabla final
 Sugerencia para *googlear*: "data wrangling dplyr"
 
 ---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejercicios para aplicar dplyr
+
+Usando la base de personas y gastos de la VIII EPF:
+
+1. Calculen el gasto promedio de los hogares por división y zona (deben quedar dos filas por cada división)
+2. Calculen la suma del gasto por hogar en la división 1 (debe quedar una observación por hogar)
+3. Unir el gasto calculado de la división 1 con la base de personas
+
+--
+
+**Nota**: en primera instancia, no se preocupen de los factores de expansión, pero si se animan, es un muy buen ejercicio hacer los cálculos considerando la expansión.
+
+--
+
+Para cumplir con la tarea, deberán usar casi todas las funciones que vimos hoy, en especial: `group_by`,
+`summarise` y `left_join` 
+
+--
+
+Es posible que algunas partes no sean tan fáciles, pero no se rindan. Sufrir un rato tiene su recompensa.
+
+
+
+---
 .linea-superior[]
 .linea-inferior[]
 
@@ -898,6 +953,9 @@ Pasemos a ver qué son las listas
 .center[
 <img src="imagenes/listas.PNG" width="600" />
 ]
+
+---
+
 
 
 ---
