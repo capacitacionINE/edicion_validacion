@@ -937,9 +937,7 @@ Para cumplir con la tarea, deberán usar casi todas las funciones que vimos hoy,
 
 --
 
-Es posible que algunas partes no sean tan fáciles, pero no se rindan. Sufrir un rato tiene su recompensa.
-
-
+Es posible que algunas partes no sean tan fáciles, pero no se rindan. Sufrir un rato tiene su recompensa 😄
 
 ---
 .linea-superior[]
@@ -953,10 +951,6 @@ Pasemos a ver qué son las listas
 .center[
 <img src="imagenes/listas.PNG" width="600" />
 ]
-
----
-
-
 
 ---
 background-image: url("imagenes/fondo2.PNG")
