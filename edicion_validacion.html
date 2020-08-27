@@ -936,20 +936,18 @@ Hacemos `inner_join` para ver qué ocurre
 personas2 &lt;- personas_alterado %&gt;% 
   inner_join(hogares_alterado, by = "folio")
 
-length(unique(personas2))
+length(unique(personas2$folio))
 ```
 
 ```
-## [1] 248
+## [1] 6213
 ```
 
 --
 
-Solo 248 hogares se mantienen en la tabla final
+Solo 6213 hogares se mantienen en la tabla final
 
---
 
-**Recomendación**: inner_join es un poco lento. Se puede reemplazar por `left_join` y `filter`
 
 ---
 .linea-superior[]
