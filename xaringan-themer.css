@@ -178,6 +178,12 @@ a, a > code {
   float: right;
   width: 47%;
 }
+.pull-right2 {
+  float: right;
+  width: 70%;
+}
+
+
 .pull-right ~ * {
   clear: both;
 }
