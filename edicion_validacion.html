@@ -1,20 +1,15 @@
----
-title: "Proceso de acompañamiento coyuntural y automatización de la Encuesta Nacional de Empleo"
-subtitle: "Subproceso de codificación<br/>Subdirección Técnica"  
-author: 
-date: '`r Sys.Date()`'
-output:
-  xaringan::moon_reader:
-    seal: false
-    lib_dir: libs
-    css: xaringan-themer.css
-    nature:
-      highlightStyle: github
-      highlightLines: true
-      countIncrementalSlides: false
-#![](imagenes/logo_portada2.PNG)
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Proceso de acompañamiento coyuntural y automatización de la Encuesta Nacional de Empleo</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="" />
+    <meta name="date" content="2020-09-01" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
 
----
 
 
 class: center, middle
@@ -23,7 +18,7 @@ class: center, middle
 .linea-inferior[]
 
 
-<img src="imagenes/logo_portada2.png" width="200" />
+&lt;img src="imagenes/logo_portada2.png" width="200" /&gt;
 
 
 ## Taller de R
@@ -34,19 +29,9 @@ class: center, middle
 
 ### agosto 2020
 
-```{r setup, include=FALSE}
-options(htmltools.dir.version = FALSE)
-knitr::opts_chunk$set(message = FALSE) 
-```
 
-```{r xaringan-themer, include=FALSE, warning=FALSE}
-library(xaringanthemer)
-#style_duo_accent(
- # primary_color = "#1381B0",
-  #secondary_color = "#FF961C",
-  #inverse_header_color = "#FFFFFF"
-#)
-```
+
+
 
 ---
 background-image: url("imagenes/fondo2.PNG")
@@ -55,8 +40,8 @@ background-position: 100% 0%
 
 # Objetivo del taller
 
-<br>
-<br>
+&lt;br&gt;
+&lt;br&gt;
 .center[
 
 ## *Entregar los conceptos necesarios para comprender el script de validación que veremos en la próxima sesión*
@@ -64,7 +49,7 @@ background-position: 100% 0%
 
 --
 
-<br>
+&lt;br&gt;
 .center[
 ## Nos enfocaremos en tareas muy concretas, relacionadas con nuestro quehacer 
 ]
@@ -96,11 +81,11 @@ background-position: 100% 0%
 
 --
 
-<br>
+&lt;br&gt;
 
 .center[
 ## Si no manejan alguno de estos conceptos, no se preocupen. Haremos lo posible para que nadie quede atrás 
-<img src="imagenes/emoticon.PNG" width="100" />
+&lt;img src="imagenes/emoticon.PNG" width="100" /&gt;
 ]
 
 
@@ -134,7 +119,7 @@ background-position: 100% 0%
 ]
 
 .center[
-<img src="https://media.giphy.com/media/26n6xBpxNXExDfuKc/giphy.gif" width="400" />
+&lt;img src="https://media.giphy.com/media/26n6xBpxNXExDfuKc/giphy.gif" width="400" /&gt;
 ]
 
 ---
@@ -145,10 +130,10 @@ background-position: 100% 0%
 
 # ¿Qué es dplyr y tidyverse?
 
-<br>
+&lt;br&gt;
 
 .center[
-<img src="imagenes/paquetes.PNG" width="600" />
+&lt;img src="imagenes/paquetes.PNG" width="600" /&gt;
 ]
 
 --
@@ -170,8 +155,9 @@ Seleccionemos las mujeres mayores de 18 de una base de datos, conservando solo l
 
 Con `R` base
 
-```{r, eval=FALSE}
-df <- datos[datos$sexo == 2 & datos$edad > 18, c("sexo", "edad")]
+
+```r
+df &lt;- datos[datos$sexo == 2 &amp; datos$edad &gt; 18, c("sexo", "edad")]
 ```
 
 
@@ -179,9 +165,10 @@ df <- datos[datos$sexo == 2 & datos$edad > 18, c("sexo", "edad")]
 
 Con `dplyr`
 
-```{r, eval=FALSE}
-datos %>% 
-  filter(sexo == 2 & edad > 18) %>% 
+
+```r
+datos %&gt;% 
+  filter(sexo == 2 &amp; edad &gt; 18) %&gt;% 
   select(sexo, edad)
 ```
 
@@ -227,14 +214,20 @@ Lo primero que haremos es seleccionar a la subpoblación que nos interesa: **per
 
 --
 
-```{r}
+
+```r
 library(tidyverse);library(haven)
 
-personas <- read_dta("data/base-personas-viii-epf-(stata).dta")
-names(personas) <- tolower(names(personas)) #dejar nombres en minúscula
-ocup_adultos <- filter(personas, edad >= 18 & cae == 1 ) #<<
+personas &lt;- read_dta("data/base-personas-viii-epf-(stata).dta")
+names(personas) &lt;- tolower(names(personas)) #dejar nombres en minúscula
+*ocup_adultos &lt;- filter(personas, edad &gt;= 18 &amp; cae == 1 )
 table(ocup_adultos$cae)
+```
 
+```
+## 
+##     1 
+## 22519
 ```
 
 --
@@ -243,7 +236,7 @@ El primer argumento de `filter` es un `dataframe` (personas)
 
 --
 
-El segundo argumento es una condición (edad >= 18 & cae == 1 )
+El segundo argumento es una condición (edad &gt;= 18 &amp; cae == 1 )
 
 --
 
@@ -266,12 +259,12 @@ También necesito construir los ingresos de la ocupación principal y una variab
 
 --
 
-```{r}
-ocup_adultos <-  mutate(ocup_adultos, 
+
+```r
+ocup_adultos &lt;-  mutate(ocup_adultos, 
                         edad2 = edad * edad, #alternativamente edad**2 o edad^2
                         ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd,
                         sexo_d = if_else(sexo == 1, 1, 0)) 
-
 ```
 
 --
@@ -286,16 +279,18 @@ La función `if_else` opera de la misma manera que en excel
 
 Ahora me gustaría construir una base de datos más compacta, solo con algunas columnas
 
-```{r}
-ocup_adultos <- select(ocup_adultos, edad, edad2, sexo, ing, eduactual)
+
+```r
+ocup_adultos &lt;- select(ocup_adultos, edad, edad2, sexo, ing, eduactual)
 ```
 
 --
 
 Finalmente, quiero ordenar los datos de menor a mayor, según edad
 
-```{r}
-ocup_adultos <- arrange(ocup_adultos, desc(edad))
+
+```r
+ocup_adultos &lt;- arrange(ocup_adultos, desc(edad))
 ```
 
 ---
@@ -307,10 +302,18 @@ background-position: 100% 0%
 
 Ahora que tengo mis datos más o menos ordenados, quiero explorar un poco las variables 
 
-```{r}
+
+```r
 summarise(ocup_adultos, 
           media_edad = mean(edad), 
           media_ing = mean(ing))
+```
+
+```
+## # A tibble: 1 x 2
+##   media_edad media_ing
+##        &lt;dbl&gt;     &lt;dbl&gt;
+## 1       42.8   612393.
 ```
 
 La función `summarise` compacta los datos en una fila, usando alguna función  
@@ -334,18 +337,18 @@ background-position: 100% 0%
 
 ## Uniendo todo...
 
-```{r, eval=F}
-ocup_adultos <- filter(personas, edad >= 18 & cae == 1 ) 
+
+```r
+ocup_adultos &lt;- filter(personas, edad &gt;= 18 &amp; cae == 1 ) 
 table(ocup_adultos$cae)
-ocup_adultos <-  mutate(ocup_adultos, 
+ocup_adultos &lt;-  mutate(ocup_adultos, 
                    edad2 = edad * edad, #alternativamente edad**2 o edad^2
                    ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd,
                    sexo_d = if_else(sexo == 1, 1, 0)) 
-ocup_adultos <- select(ocup_adultos, edad, edad2, sexo, ing, eduactual)
-ocup_adultos <- arrange(ocup_adultos, desc(edad))
+ocup_adultos &lt;- select(ocup_adultos, edad, edad2, sexo, ing, eduactual)
+ocup_adultos &lt;- arrange(ocup_adultos, desc(edad))
 summarise(ocup_adultos, media_edad = mean(edad), 
           media_ing = mean(ing))
-
 ```
 
 --
@@ -364,19 +367,20 @@ background-position: 100% 0%
 
 # Encadenamiento de funciones
 
-El operador `%>%` (*pipe*) se usa para concatenar funciones
+El operador `%&gt;%` (*pipe*) se usa para concatenar funciones
 
 Usamos los (¿las?) *pipes* para pasar información de un proceso a otro
 
 --
 
-```{r, eval=F}
-ocup_adultos <- personas %>% 
-  filter(edad >= 18 & cae == 1 ) %>% #<<
+
+```r
+ocup_adultos &lt;- personas %&gt;% 
+* filter(edad &gt;= 18 &amp; cae == 1 ) %&gt;%
   mutate(edad2 = edad * edad, 
          ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd,
-         sexo_d = if_else(sexo == 1, 1, 0)) %>%
-  select(edad, edad2, sexo, ing, eduactual) %>%
+         sexo_d = if_else(sexo == 1, 1, 0)) %&gt;%
+  select(edad, edad2, sexo, ing, eduactual) %&gt;%
   arrange(desc(edad))
 ```
 --
@@ -390,19 +394,19 @@ background-position: 100% 0%
 
 # Encadenamiento de funciones
 
-El operador `%>%` (*pipe*) se usa para concatenar funciones
+El operador `%&gt;%` (*pipe*) se usa para concatenar funciones
 
 Usamos los (¿las?) *pipes* para pasar información de un proceso a otro
 
-```{r}
-ocup_adultos <- personas %>% 
-  filter(edad >= 18 & cae == 1 ) %>% 
-  mutate(edad2 = edad * edad, #<<
-         ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd, #<<
-         sexo_d = if_else(sexo == 1, 1, 0)) %>% #<<
-  select(edad, edad2, sexo, ing, eduactual) %>% 
-  arrange(desc(edad))
 
+```r
+ocup_adultos &lt;- personas %&gt;% 
+  filter(edad &gt;= 18 &amp; cae == 1 ) %&gt;% 
+* mutate(edad2 = edad * edad,
+*        ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd,
+*        sexo_d = if_else(sexo == 1, 1, 0)) %&gt;%
+  select(edad, edad2, sexo, ing, eduactual) %&gt;% 
+  arrange(desc(edad))
 ```
 
 Filtramos con `filter`
@@ -417,19 +421,19 @@ background-position: 100% 0%
 
 # Encadenamiento de funciones
 
-El operador `%>%` (*pipe*) se usa para concatenar funciones
+El operador `%&gt;%` (*pipe*) se usa para concatenar funciones
 
 Usamos los (¿las?) *pipes* para pasar información de un proceso a otro
 
-```{r}
-ocup_adultos <- personas %>% 
-  filter(edad >= 18 & cae == 1 ) %>% 
+
+```r
+ocup_adultos &lt;- personas %&gt;% 
+  filter(edad &gt;= 18 &amp; cae == 1 ) %&gt;% 
   mutate(edad2 = edad * edad, 
          ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd,
-         sexo_d = if_else(sexo == 1, 1, 0)) %>%
-  select(edad, edad2, sexo, ing, eduactual) %>% #<<
+         sexo_d = if_else(sexo == 1, 1, 0)) %&gt;%
+* select(edad, edad2, sexo, ing, eduactual) %&gt;%
   arrange(desc(edad))
-
 ```
 
 Filtramos con `filter`
@@ -445,19 +449,19 @@ background-position: 100% 0%
 
 # Encadenamiento de funciones
 
-El operador `%>%` (*pipe*) se usa para concatenar funciones
+El operador `%&gt;%` (*pipe*) se usa para concatenar funciones
 
 Usamos los (¿las?) *pipes* para pasar información de un proceso a otro
 
-```{r}
-ocup_adultos <- personas %>% 
-  filter(edad >= 18 & cae == 1 ) %>% 
+
+```r
+ocup_adultos &lt;- personas %&gt;% 
+  filter(edad &gt;= 18 &amp; cae == 1 ) %&gt;% 
   mutate(edad2 = edad * edad, 
          ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd,
-         sexo_d = if_else(sexo == 1, 1, 0)) %>%
-  select(edad, edad2, sexo, ing, eduactual) %>% 
-  arrange(desc(edad)) #<<
-
+         sexo_d = if_else(sexo == 1, 1, 0)) %&gt;%
+  select(edad, edad2, sexo, ing, eduactual) %&gt;% 
+* arrange(desc(edad))
 ```
 
 Filtramos con `filter`
@@ -488,14 +492,15 @@ Podemos pensar en una secuencia de acciones:
 ]
 
 .pull-right[
-<img src="imagenes/huevo.PNG" width="250"/>
+&lt;img src="imagenes/huevo.PNG" width="250"/&gt;
 ]
 
 --
 
 Expresado en pseudo código
 
-```{r, eval=F}
+
+```r
 comer(revolver(prender_fuego(poner_ensarten(sacar("huevos"), con = "aceite"))))
 ```
 
@@ -503,11 +508,12 @@ comer(revolver(prender_fuego(poner_ensarten(sacar("huevos"), con = "aceite"))))
 
 Expresado con *pipes*
 
-```{r, eval=F}
-sacar("huevos") %>% 
-  poner_ensarten(con = "aceite") %>% 
-  prender_fuego() %>% 
-  revolver() %>% 
+
+```r
+sacar("huevos") %&gt;% 
+  poner_ensarten(con = "aceite") %&gt;% 
+  prender_fuego() %&gt;% 
+  revolver() %&gt;% 
   comer()
 ```
 ---
@@ -525,23 +531,25 @@ Los *pipes* sirven para que nuestro código sea mucho más legible
 Por una cuestión de estilo y legibilidad es deseable escribir las funciones hacia abajo
 
 
-<img src="imagenes/correcto.PNG" width="50"/>
+&lt;img src="imagenes/correcto.PNG" width="50"/&gt;
 
-```{r, eval = F}
-personas %>% 
-  filter(edad >= 18 & cae == 1 ) %>% 
+
+```r
+personas %&gt;% 
+  filter(edad &gt;= 18 &amp; cae == 1 ) %&gt;% 
   select(edad, cae)
 ```
 
-<img src="imagenes/incorrecto.PNG" width="50"/>
+&lt;img src="imagenes/incorrecto.PNG" width="50"/&gt;
 
-```{r, eval=F}
-personas %>% filter(edad >= 18 & cae == 1 ) %>% select(edad, cae)
+
+```r
+personas %&gt;% filter(edad &gt;= 18 &amp; cae == 1 ) %&gt;% select(edad, cae)
 ```
 
 --
 .center[
-<img src="imagenes/shortcut.PNG" width="450" />
+&lt;img src="imagenes/shortcut.PNG" width="450" /&gt;
 ]
 
 ---
@@ -552,10 +560,11 @@ background-position: 100% 0%
 # Ahora les toca a ustedes
 
 Carguen la base de personas
-```{r}
+
+```r
 library(tidyverse);library(haven)
-personas <- read_dta("data/base-personas-viii-epf-(stata).dta")
-names(personas) <- tolower(names(personas)) #dejar nombres en minúscula
+personas &lt;- read_dta("data/base-personas-viii-epf-(stata).dta")
+names(personas) &lt;- tolower(names(personas)) #dejar nombres en minúscula
 ```
 
 Intenten concatenar las siguientes instrucciones
@@ -568,10 +577,11 @@ Intenten concatenar las siguientes instrucciones
 Deberían basarse en el código de la lámina anterior
 
 --
-```{r, eval=F}
-df <- personas %>% 
-  filter(sexo == 1) %>% 
-  mutate(joven = if_else(edad <= 35, 1, 0)) %>% 
+
+```r
+df &lt;- personas %&gt;% 
+  filter(sexo == 1) %&gt;% 
+  mutate(joven = if_else(edad &lt;= 35, 1, 0)) %&gt;% 
   select(folio, edad, joven)
 ```
 
@@ -605,11 +615,12 @@ Para ello, usamos la función `group_by`
 
 --
 
-```{r}
-df <- personas %>% 
-  mutate(ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd) %>% 
-  group_by(folio) %>% #<<
-  mutate(ing_hog = sum(ing)) #<<
+
+```r
+df &lt;- personas %&gt;% 
+  mutate(ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd) %&gt;% 
+* group_by(folio) %&gt;%
+* mutate(ing_hog = sum(ing))
 ```
 --
 
@@ -630,15 +641,23 @@ Queremos calcular el ingreso promedio por hogar, según área de estimación
 
 --
 
-```{r}
-personas %>% 
-  mutate(ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd) %>% 
-  group_by(folio) %>% 
-  mutate(ing_hog = sum(ing)) %>%  
-  slice(1) %>% #<< 
-  group_by(zona)  %>% #<< 
-  summarise(media_zona = mean(ing_hog)) #<<
-  
+
+```r
+personas %&gt;% 
+  mutate(ing = ingda_hd + ingdh_hd + ingnp_hd + ingdpi_hd) %&gt;% 
+  group_by(folio) %&gt;% 
+  mutate(ing_hog = sum(ing)) %&gt;%  
+* slice(1) %&gt;%
+* group_by(zona)  %&gt;%
+* summarise(media_zona = mean(ing_hog))
+```
+
+```
+## # A tibble: 2 x 2
+##                                zona media_zona
+##                           &lt;dbl+lbl&gt;      &lt;dbl&gt;
+## 1 1 [Gran Santiago]                    944790.
+## 2 2 [Resto de Capitales Regionales]    862610.
 ```
 
 `slice` selecciona *n* filas de cada grupo. En este caso seleccionamos la primera
@@ -659,10 +678,22 @@ Usando la base de personas, calculemos la edad promedio, según sexo y zona. Par
 
 --
 
-```{r, eval=T}
-personas %>% 
-  group_by(sexo, zona) %>% 
+
+```r
+personas %&gt;% 
+  group_by(sexo, zona) %&gt;% 
   summarise(edad_media = mean(edad))
+```
+
+```
+## # A tibble: 4 x 3
+## # Groups:   sexo [2]
+##         sexo                              zona edad_media
+##    &lt;dbl+lbl&gt;                         &lt;dbl+lbl&gt;      &lt;dbl&gt;
+## 1 1 [Hombre] 1 [Gran Santiago]                       34.6
+## 2 1 [Hombre] 2 [Resto de Capitales Regionales]       34.5
+## 3 2 [Mujer]  1 [Gran Santiago]                       38.0
+## 4 2 [Mujer]  2 [Resto de Capitales Regionales]       37.1
 ```
 
 
@@ -684,7 +715,7 @@ background-position: 100% 0%
 No queremos que nos vaya a pasar...
 
 .center[
-<img src="https://media.giphy.com/media/cFkiFMDg3iFoI/giphy.gif" width="350" />
+&lt;img src="https://media.giphy.com/media/cFkiFMDg3iFoI/giphy.gif" width="350" /&gt;
 ]
 
 --
@@ -693,7 +724,7 @@ O esto...
 
 
 .center[
-<img src="https://media0.giphy.com/media/P4TqKx6NHyLnO/giphy.gif?cid=3640f6095c91abd67a467174592b5512" width="350" />
+&lt;img src="https://media0.giphy.com/media/P4TqKx6NHyLnO/giphy.gif?cid=3640f6095c91abd67a467174592b5512" width="350" /&gt;
 ]
 
 
@@ -722,7 +753,7 @@ background-position: 100% 0%
 ]
 
 .pull-right[
-<img src="imagenes/joins.PNG" width="1000" />
+&lt;img src="imagenes/joins.PNG" width="1000" /&gt;
 ]
 
 --
@@ -747,19 +778,29 @@ Excluye las filas del lado derecho que no hagan *match*
 ]
 
 .pull-right[
-<img src="imagenes/left_join.PNG" width="300" />
+&lt;img src="imagenes/left_join.PNG" width="300" /&gt;
 ]
 
 --
 
 Vamos a crear una base ficticia que esté a nivel de hogares
-```{r}
-hogares <- personas %>% 
-  group_by(folio) %>% 
-  slice(1) %>% 
+
+```r
+hogares &lt;- personas %&gt;% 
+  group_by(folio) %&gt;% 
+  slice(1) %&gt;% 
   select(folio, ing_total_hog_hd) 
 
 head(hogares, 2)
+```
+
+```
+## # A tibble: 2 x 2
+## # Groups:   folio [2]
+##   folio   ing_total_hog_hd
+##   &lt;chr&gt;              &lt;dbl&gt;
+## 1 00001-1         1588000 
+## 2 00002-1          670060.
 ```
 
 ---
@@ -770,8 +811,9 @@ background-position: 100% 0%
 # Familia join (left_join)
 
 
-```{r}
-personas2 <- personas %>% 
+
+```r
+personas2 &lt;- personas %&gt;% 
   left_join(hogares, by = "folio")
 ```
 
@@ -785,10 +827,13 @@ personas2 <- personas %>%
 
 **Ojo**: cuando 2 columnas tienen el mismo nombre en ambas tablas, R agrega un sufijo
 
-```{r, echo=F,highlight.output =  c(2)}
-personas2 %>% 
-  select(folio, starts_with("ing_total_hog_hd.")) %>% 
-  slice(1:2)
+
+```
+## # A tibble: 2 x 3
+*##   folio   ing_total_hog_hd.x ing_total_hog_hd.y
+##   &lt;chr&gt;                &lt;dbl&gt;              &lt;dbl&gt;
+## 1 00001-1            1588000            1588000
+## 2 00001-1            1588000            1588000
 ```
 
 
@@ -803,26 +848,30 @@ Vamos a agregar nuevos registros a la tabla de la derecha y hacemos `left_join`
 
 --
 
-```{r, results="hide"}
-hogares_alterado <- hogares %>% 
+
+```r
+hogares_alterado &lt;- hogares %&gt;% 
   bind_rows(data.frame(folio = c("99999999999-1", "999999999999-99"), 
                        ing_total_hog_hd = c(1, 2)))
 
-personas2 <- personas %>% 
+personas2 &lt;- personas %&gt;% 
   left_join(hogares_alterado, by = "folio")
 
 dim(personas2)[1]
 dim(personas)[1]
-
 ```
 
 ¿personas2 y personas tendrán igual o distinto número de filas?
 
 --
 
-```{r, echo=F}
-dim(personas2)[1]
-dim(personas)[1]
+
+```
+## [1] 48308
+```
+
+```
+## [1] 48308
 ```
 
 --
@@ -848,26 +897,30 @@ Es posible que las filas de la tabla final no coincida con ninguna de las origin
 ]
 ]
 .pull-right[
-<img src="imagenes/inner_join.PNG" width="300" />
+&lt;img src="imagenes/inner_join.PNG" width="300" /&gt;
 ]
 
 --
 
 Vamos a seleccionar aleatoriamente filas de ambas tablas
-```{r}
+
+```r
 set.seed(123)
-hogares_alterado <- hogares %>%
-  ungroup() %>% 
+hogares_alterado &lt;- hogares %&gt;%
+  ungroup() %&gt;% 
   slice_sample(prop = 0.5)
 set.seed(123)  
-personas_alterado <- personas %>% 
-  ungroup() %>% 
+personas_alterado &lt;- personas %&gt;% 
+  ungroup() %&gt;% 
   slice_sample(prop = 0.5)
 
-l1 <- length(unique(hogares_alterado$folio))
-l2 <- length(unique(personas_alterado$folio))
+l1 &lt;- length(unique(hogares_alterado$folio))
+l2 &lt;- length(unique(personas_alterado$folio))
 c(l1, l2)
+```
 
+```
+## [1]  7619 12467
 ```
 ---
 background-image: url("imagenes/fondo2.PNG")
@@ -878,11 +931,16 @@ background-position: 100% 0%
 
 Hacemos `inner_join` para ver qué ocurre
 
-```{r}
-personas2 <- personas_alterado %>% 
+
+```r
+personas2 &lt;- personas_alterado %&gt;% 
   inner_join(hogares_alterado, by = "folio")
 
 length(unique(personas2$folio))
+```
+
+```
+## [1] 6213
 ```
 
 --
@@ -945,35 +1003,35 @@ background-position: 100% 0%
 
 # Resolución ejercicio
 
-```{r, eval=F}
-#gastos <- read_dta("data/base-gastos-viii-epf-(stata).dta")
+
+```r
+#gastos &lt;- read_dta("data/base-gastos-viii-epf-(stata).dta")
 #Tarea 1
-names(gastos) <- tolower(names(gastos))
-promedio_gasto <- gastos %>% 
-  filter(folio != "" & d != "") %>% #eliminar challa
-  group_by(folio) %>% 
-  mutate(n = row_number() == 1) %>% 
-  group_by(zona) %>% 
-  mutate(hogares_zona = sum(n)) %>% 
-  group_by(d, zona) %>% 
-  mutate(gasto_medio = sum(gasto) / hogares_zona) %>% 
-  slice(1) %>% 
+names(gastos) &lt;- tolower(names(gastos))
+promedio_gasto &lt;- gastos %&gt;% 
+  filter(folio != "" &amp; d != "") %&gt;% #eliminar challa
+  group_by(folio) %&gt;% 
+  mutate(n = row_number() == 1) %&gt;% 
+  group_by(zona) %&gt;% 
+  mutate(hogares_zona = sum(n)) %&gt;% 
+  group_by(d, zona) %&gt;% 
+  mutate(gasto_medio = sum(gasto) / hogares_zona) %&gt;% 
+  slice(1) %&gt;% 
   select(zona, d,hogares_zona, gasto_medio)
 
 #Tarea 2
-gasto_div1 <- gastos %>% 
-  filter(folio != "" & d != "") %>% #eliminar challa
-  filter(d == "01") %>% #OJO: se pierden algunos folios
-  group_by(folio) %>% 
-  mutate(suma_d1 = sum(gasto)) %>% 
-  slice(1) %>% 
+gasto_div1 &lt;- gastos %&gt;% 
+  filter(folio != "" &amp; d != "") %&gt;% #eliminar challa
+  filter(d == "01") %&gt;% #OJO: se pierden algunos folios
+  group_by(folio) %&gt;% 
+  mutate(suma_d1 = sum(gasto)) %&gt;% 
+  slice(1) %&gt;% 
   select(folio, suma_d1)
 
 #Tarea 3
-final <- personas %>% 
-  left_join(gasto_div1, by = "folio") %>% 
+final &lt;- personas %&gt;% 
+  left_join(gasto_div1, by = "folio") %&gt;% 
   mutate(suma_d1 = if_else(is.na(suma_d1), 0, suma_d1)) #hogares que no pegaron
-  
 ```
 
 
@@ -988,7 +1046,7 @@ Pasemos a ver qué son las listas
 ]
 
 .center[
-<img src="imagenes/listas.PNG" width="600" />
+&lt;img src="imagenes/listas.PNG" width="600" /&gt;
 ]
 
 ---
@@ -1009,9 +1067,14 @@ Tienen una gran flexibilidad
 Nos permiten almacenar datos de diferente tipo y longitud
 
 
-```{r}
-mi_lista <- list(c(1,2,3), "Mingus", personas)
+
+```r
+mi_lista &lt;- list(c(1,2,3), "Mingus", personas)
 length(mi_lista)
+```
+
+```
+## [1] 3
 ```
 --
 Podemos acceder a los elementos de nuestra lista a través de sus índices
@@ -1020,12 +1083,14 @@ Podemos acceder a los elementos de nuestra lista a través de sus índices
 
 ¿Qué creen que va a devolver esta línea de código?
 
-```{r, results='hide'}
+
+```r
 mi_lista[[2]]
 ```
 --
-```{r, echo=FALSE}
-mi_lista[[2]]
+
+```
+## [1] "Mingus"
 ```
 
 ---
@@ -1037,26 +1102,48 @@ background-position: 100% 0%
 
 También podemos acceder a lo que sea que contengan los índices
 
-```{r}
+
+```r
 mi_lista[[1]][3]
+```
+
+```
+## [1] 3
 ```
 --
 
 Y además transformar los elementos dentro de la lista
 
-```{r}
-mi_lista[[1]][3] <- 99
+
+```r
+mi_lista[[1]][3] &lt;- 99
 mi_lista[[1]]
+```
+
+```
+## [1]  1  2 99
 ```
 
 --
 
 Para poner nombres a la lista podemos hacer lo siguiente
 
-```{r}
-names(mi_lista) <- c("uno", "dos", "tres")
+
+```r
+names(mi_lista) &lt;- c("uno", "dos", "tres")
 mi_lista[["uno"]]
+```
+
+```
+## [1]  1  2 99
+```
+
+```r
 mi_lista$uno
+```
+
+```
+## [1]  1  2 99
 ```
 
 ---
@@ -1068,11 +1155,12 @@ background-position: 100% 0%
 
 Creen una lista con los siguientes elementos y asígnenla a un objeto llamado mi_lista:
 
-```{r}
-animales <- c("perro", "gato")
-escritores <- c("hemingway", "manuel rojas", "nona fernandez", "faulkner", "harper lee")
-grito <- "aaaaaaah"
-numeros <- 1:100
+
+```r
+animales &lt;- c("perro", "gato")
+escritores &lt;- c("hemingway", "manuel rojas", "nona fernandez", "faulkner", "harper lee")
+grito &lt;- "aaaaaaah"
+numeros &lt;- 1:100
 ```
 
 1. Cuenten cuántos elementos tiene la lista
@@ -1083,13 +1171,14 @@ numeros <- 1:100
 
 --
 
-```{r, eval=F}
-mi_lista <- list(animales, escritores, grito, numeros)
+
+```r
+mi_lista &lt;- list(animales, escritores, grito, numeros)
 length(mi_lista)
-names(mi_lista) <- c("animales", "escritores", "grito", "numeros")
+names(mi_lista) &lt;- c("animales", "escritores", "grito", "numeros")
 mi_lista[[2]][4] #priemra forma de acceder
-mi_lista$grito <- "me siento ñoño aprendiendo R" #segunda forma de acceder
-mi_lista[["numeros"]] <- c(1:10) #tercera forma de acceder
+mi_lista$grito &lt;- "me siento ñoño aprendiendo R" #segunda forma de acceder
+mi_lista[["numeros"]] &lt;- c(1:10) #tercera forma de acceder
 ```
 
 
@@ -1110,14 +1199,19 @@ background-position: 100% 0%
 Las funcionales (functionals) son funciones que reciben como argumento otra función y retornan un vector
 
 
-```{r}
-random <- function(f) f(runif(10))
+
+```r
+random &lt;- function(f) f(runif(10))
 random(mean)
+```
+
+```
+## [1] 0.5575298
 ```
 --
 
 .center[
-<img src="https://media.giphy.com/media/uYgYvxxhCf3e8/giphy.gif" width="280" />
+&lt;img src="https://media.giphy.com/media/uYgYvxxhCf3e8/giphy.gif" width="280" /&gt;
 ]
 
 ---
@@ -1132,7 +1226,7 @@ Los contenidos de esta clase son más avanzados que los de la sesión anterior, 
 --
 
 .center[
-<img src="https://media.giphy.com/media/1FMaabePDEfgk/giphy.gif" width="250" />
+&lt;img src="https://media.giphy.com/media/1FMaabePDEfgk/giphy.gif" width="250" /&gt;
 ]
 
 --
@@ -1142,7 +1236,7 @@ Es probable que no todo se entienda inmediatamente, pero no hay nada de malo en 
 --
 
 .center[
-<img src="https://media.giphy.com/media/YEongvRqe8sXC/giphy.gif" width="280" >
+&lt;img src="https://media.giphy.com/media/YEongvRqe8sXC/giphy.gif" width="280" &gt;
 ] 
 
 ---
@@ -1155,7 +1249,8 @@ background-position: 100% 0%
 
 ¿Alguno de ustedes tiene una idea de qué hace este código?
 
-```{r, eval=F}
+
+```r
 for (i in 1:10) {
   print(i)
 }
@@ -1168,12 +1263,20 @@ El valor de `i` irá tomando valores de 1 al 10
 
 --
 
-```{r, eval=T}
-escritores <- c("hemingway", "orwell", "nona fernandez", "faulkner", "harper lee")
+
+```r
+escritores &lt;- c("hemingway", "orwell", "nona fernandez", "faulkner", "harper lee")
 for (escritor in escritores) {
   print(paste0(escritor, " escribió varias novelas")) 
 }
+```
 
+```
+## [1] "hemingway escribió varias novelas"
+## [1] "orwell escribió varias novelas"
+## [1] "nona fernandez escribió varias novelas"
+## [1] "faulkner escribió varias novelas"
+## [1] "harper lee escribió varias novelas"
 ```
 
 --
@@ -1194,7 +1297,7 @@ background-position: 100% 0%
 *Each functional is tailored for a specific task, so when you recognise the functional you immediately know why it’s being used.*
 
 .center[
-<img src="imagenes/hadley.PNG" width="200" />
+&lt;img src="imagenes/hadley.PNG" width="200" /&gt;
 ]
 
 --
@@ -1210,26 +1313,40 @@ background-position: 100% 0%
 # ¿Por qué usamos funcionales?
 
 
-```{r, eval=T}
-datos <-  list(df1 = data.frame(x = c(1, 2, 7)), df2 = data.frame(x = c(3, 4))) 
+
+```r
+datos &lt;-  list(df1 = data.frame(x = c(1, 2, 7)), df2 = data.frame(x = c(3, 4))) 
 datos
+```
+
+```
+## $df1
+##   x
+## 1 1
+## 2 2
+## 3 7
+## 
+## $df2
+##   x
+## 1 3
+## 2 4
 ```
 
 --
 
 Queremos evitar código difícil de entender y que esconde errores 
 
-```{r}
-i <- 1
-new_data <- vector(length = length(datos), mode = "list")
+
+```r
+i &lt;- 1
+new_data &lt;- vector(length = length(datos), mode = "list")
 for (df in datos) {
-  if (nrow(df) > 2) {
-    new_data[[i]] <- df %>% 
+  if (nrow(df) &gt; 2) {
+    new_data[[i]] &lt;- df %&gt;% 
       mutate(y = x + mean(x) )
   }
   i = i + 1
 }
-
 ```
 
 
@@ -1253,16 +1370,16 @@ Cuando existen *loops* anidados y condiciones más complejas, pueden pasar varia
 
 Queremos escribir algo como esto
 
-```{r, eval=F}
-crear_si <- function(df) {
-  if (nrow(df) > 2) {
-     df %>% 
+
+```r
+crear_si &lt;- function(df) {
+  if (nrow(df) &gt; 2) {
+     df %&gt;% 
       mutate(y = x + mean(x) )
   } 
 }
 
-new_data <- map(datos, crear_si)
-
+new_data &lt;- map(datos, crear_si)
 ```
 
 
@@ -1301,7 +1418,7 @@ Para usar funcionales en estilo tidyverse contamos con el paquete `purrr`
 --
 
 .center[
-<img src="imagenes/purrr.PNG" width="200" />
+&lt;img src="imagenes/purrr.PNG" width="200" /&gt;
 
 ]
 
@@ -1317,7 +1434,7 @@ Mapear es llevar algo de un lugar a otro
 
 
 .pull-left[
-<img src="imagenes/funcional.PNG" width="250" />
+&lt;img src="imagenes/funcional.PNG" width="250" /&gt;
 ]
  
 .pull-right[
@@ -1331,9 +1448,21 @@ Una funcional es una manera diferente de implementar el concepto de iteración
 
 --
 
-```{r}
-triple <- function(x) {x * 3} 
+
+```r
+triple &lt;- function(x) {x * 3} 
 map(1:3, triple)
+```
+
+```
+## [[1]]
+## [1] 3
+## 
+## [[2]]
+## [1] 6
+## 
+## [[3]]
+## [1] 9
 ```
 ---
 background-image: url("imagenes/fondo2.PNG")
@@ -1343,8 +1472,9 @@ background-position: 100% 0%
 # Paréntesis de funciones
 
 En `R` implementamos funciones del siguiente modo 
-```{r}
-doblar <- function(x) {
+
+```r
+doblar &lt;- function(x) {
   return(2 * x)
 }
 ```
@@ -1353,8 +1483,13 @@ doblar <- function(x) {
 
 Para llamar a la función, hacemos lo siguiente
 
-```{r}
+
+```r
 doblar(3)
+```
+
+```
+## [1] 6
 ```
 
 --
@@ -1370,12 +1505,23 @@ background-position: 100% 0%
 
 Queremos calcular el promedio de varias columnas
 
-```{r}
-ingresos <- personas %>% 
+
+```r
+ingresos &lt;- personas %&gt;% 
   select(ing_total_hog_hd, ing_disp_hog_hd_ai, ing_primario_hog_hd)
 
 map(ingresos, mean) 
+```
 
+```
+## $ing_total_hog_hd
+## [1] 1462938
+## 
+## $ing_disp_hog_hd_ai
+## [1] 1454598
+## 
+## $ing_primario_hog_hd
+## [1] 1302252
 ```
 Lo que hace `map` es evaluar la función `mean` en cada una de las columnas del `dataframe`
 
@@ -1403,8 +1549,14 @@ En el ejemplo anterior el resultado era una lista genérica.
 
 - map_dbl
 
-```{r}
+
+```r
 map_dbl(ingresos, mean) 
+```
+
+```
+##    ing_total_hog_hd  ing_disp_hog_hd_ai ing_primario_hog_hd 
+##             1462938             1454598             1302252
 ```
 
 
@@ -1417,8 +1569,13 @@ background-position: 100% 0%
 
 Si existe conflicto entre el vector que le pedimos a `map` y los valores de la función evaluada, obtendremos un error
 
-```{r, error=T}
+
+```r
 map_int(ingresos, mean) 
+```
+
+```
+## Error: Can't coerce element 1 from a double to a integer
 ```
 
 --
@@ -1450,7 +1607,7 @@ background-position: 100% 0%
 2. Genera una base a nivel de hogar, conservando las siguientes columnas: ing_disp_hog_hd, ing_disp_hog_hd_ai y ing_disp_hog_hd_pc. Luego, aplica una normalización a cada una de ellas. La normalización que usaremos es la siguiente:
 
 .center[
-$\frac{(x_i-media(x))}{sd(x)}$
+`\(\frac{(x_i-media(x))}{sd(x)}\)`
 ]
 
 
@@ -1465,12 +1622,12 @@ Asigna el resultado de tu código a un objeto llamado df.
 
 --
 
-```{r, eval=F}
+
+```r
 #Función para normalizar
-normalizar <-  function(x) {
+normalizar &lt;-  function(x) {
   #aquí va tu código
 }
-
 ```
 
 ---
@@ -1482,18 +1639,18 @@ background-position: 100% 0%
 # Solución ejercicio
 
 
-```{r, eval=F}
+
+```r
 #Ejercicio 1
 map(personas, typeof) 
 
 #Ejercicio 2
-df <- personas %>% 
-  group_by(folio) %>% 
-  slice(1) %>% 
-  ungroup() %>% 
-  select(ing_disp_hog_hd, ing_disp_hog_hd_ai, ing_disp_hog_hd_pc) %>% 
+df &lt;- personas %&gt;% 
+  group_by(folio) %&gt;% 
+  slice(1) %&gt;% 
+  ungroup() %&gt;% 
+  select(ing_disp_hog_hd, ing_disp_hog_hd_ai, ing_disp_hog_hd_pc) %&gt;% 
   map(normalizar)
-
 ```
 
 `normalizar` se aplica a las 3 columnas 
@@ -1518,14 +1675,26 @@ La función `mean` puede recibir el parámetro na.rm para ignorar los `NA`
 
 Vamos a introducir algunos valores `NA`
 
-```{r}
-personas %>% 
-  group_by(folio) %>% 
-  slice(1) %>% 
-  ungroup() %>% 
-  select(ing_disp_hog_hd, ing_disp_hog_hd_ai, ing_disp_hog_hd_pc) %>% 
-  mutate(ing_disp_hog_hd = if_else(ing_disp_hog_hd <= 300000, NA_real_, ing_disp_hog_hd )) %>% #<<
-  map(mean, na.rm = T) #<<
+
+```r
+personas %&gt;% 
+  group_by(folio) %&gt;% 
+  slice(1) %&gt;% 
+  ungroup() %&gt;% 
+  select(ing_disp_hog_hd, ing_disp_hog_hd_ai, ing_disp_hog_hd_pc) %&gt;% 
+* mutate(ing_disp_hog_hd = if_else(ing_disp_hog_hd &lt;= 300000, NA_real_, ing_disp_hog_hd )) %&gt;%
+* map(mean, na.rm = T)
+```
+
+```
+## $ing_disp_hog_hd
+## [1] 1312287
+## 
+## $ing_disp_hog_hd_ai
+## [1] 1344931
+## 
+## $ing_disp_hog_hd_pc
+## [1] 420915.8
 ```
 
 ---
@@ -1536,7 +1705,7 @@ background-position: 100% 0%
 # Agreguemos más argumentos
 
 .pull-left[
-<img src="imagenes/funcional2.PNG" width="300" />
+&lt;img src="imagenes/funcional2.PNG" width="300" /&gt;
 ]
 
 --
@@ -1550,7 +1719,8 @@ El orden de los argumentos es el siguiente:
 ]
 
 
-```{r, eval= F}
+
+```r
 map(personas, mean, na.rm = T ) 
 ```
 
@@ -1562,7 +1732,7 @@ En este caso el argumento está fijo, es decir, aplica para todas las iteracione
 ¿Qué pasa si queremos que este argumento vaya variando?
 
 .center[
-<img src="https://media.giphy.com/media/a5viI92PAF89q/giphy.gif" width="200" />
+&lt;img src="https://media.giphy.com/media/a5viI92PAF89q/giphy.gif" width="200" /&gt;
 ]
 
 
@@ -1576,12 +1746,21 @@ background-position: 100% 0%
 A veces, queremos que el argumento de la función vaya variando
 
 
-```{r}
-escritores <- c("hemingway", "orwell", "nona fernandez", "faulkner", "harper lee")
+
+```r
+escritores &lt;- c("hemingway", "orwell", "nona fernandez", "faulkner", "harper lee")
 
 for (i in 1:5) {
   print(c(i, escritores[i]))
 }
+```
+
+```
+## [1] "1"         "hemingway"
+## [1] "2"      "orwell"
+## [1] "3"              "nona fernandez"
+## [1] "4"        "faulkner"
+## [1] "5"          "harper lee"
 ```
 
 --
@@ -1602,14 +1781,23 @@ background-position: 100% 0%
 # Agreguemos argumentos móviles
 
 .center[
-<img src="imagenes/map2.PNG" width="350" />
+&lt;img src="imagenes/map2.PNG" width="350" /&gt;
 ]
 
 Tenemos una función que toma dos valores y los imprime dentro de un vector 
 
-```{r}
-ejemplo <- function(x, y) {print(c(x, y))}
-result <- map2(escritores, 1:5, ejemplo)  
+
+```r
+ejemplo &lt;- function(x, y) {print(c(x, y))}
+result &lt;- map2(escritores, 1:5, ejemplo)  
+```
+
+```
+## [1] "hemingway" "1"        
+## [1] "orwell" "2"     
+## [1] "nona fernandez" "3"             
+## [1] "faulkner" "4"       
+## [1] "harper lee" "5"
 ```
 
 
@@ -1626,7 +1814,8 @@ background-position: 100% 0%
 
 Alternativamente, pueden usar `walk` y `walk2` combinada con una función anónima. No es fundamental y queda como desafío personal 🤓
 
-```{r, eval=F}
+
+```r
 walk2(escritores, 1:5, function(x, y) print(c(x, y))  )
 ```
 
@@ -1635,7 +1824,7 @@ walk2(escritores, 1:5, function(x, y) print(c(x, y))  )
 [walk](https://www.youtube.com/watch?v=LWZTzdwRCSQ) 🤟
 
 .center[
-<img src="imagenes/pantera.PNG" width="350" />
+&lt;img src="imagenes/pantera.PNG" width="350" /&gt;
 ]
 
 
@@ -1651,17 +1840,18 @@ background-position: 100% 0%
 2) Ejecuten el siguiente código
 
 
-```{r, eval=F}
-personas <- read_dta("data/base-personas-viii-epf-(stata).dta")
-names(personas) <- tolower(names(personas))
-varstrat <- sort(unique(personas$varstrat))
 
-filter_save <- function(df, num) {
-  num_enquo <- enquo(num)
-  data <- df %>% 
-    filter(varstrat == !!num_enquo) %>% 
+```r
+personas &lt;- read_dta("data/base-personas-viii-epf-(stata).dta")
+names(personas) &lt;- tolower(names(personas))
+varstrat &lt;- sort(unique(personas$varstrat))
+
+filter_save &lt;- function(df, num) {
+  num_enquo &lt;- enquo(num)
+  data &lt;- df %&gt;% 
+    filter(varstrat == !!num_enquo) %&gt;% 
     select(folio, varstrat)
-  file_name <- paste0("data/ejercicio/estrato_", num, ".RData")
+  file_name &lt;- paste0("data/ejercicio/estrato_", num, ".RData")
   save(data, file = file_name)
 }
 
@@ -1698,7 +1888,7 @@ class: center, middle
 
 .linea-superior[]
 .linea-inferior[]
-<img src="imagenes/logo_portada2.png" width="200" />
+&lt;img src="imagenes/logo_portada2.png" width="200" /&gt;
 
 
 
@@ -1710,27 +1900,148 @@ class: center, middle
 .linea-superior[]
 .linea-inferior[]
 
-```{r, eval=F}
 
-concatenar <- function(x, y) {
+```r
+concatenar &lt;- function(x, y) {
   c(x, y)
 }
 
-iterar <- function(x) {
+iterar &lt;- function(x) {
   map(1:3, concatenar, x = x  )
 }
 
-x <- map(1:2, function(x) {
+x &lt;- map(1:2, function(x) {
   map(1:3, function(y) c(x, y))
   } 
 )
 
-x <- map(1:2, function(x) {
+x &lt;- map(1:2, function(x) {
   map(1:3, concatenar, x = x  )
   } 
 )
 
-x <- map(1:2, iterar)
-   
-
+x &lt;- map(1:2, iterar)
 ```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
