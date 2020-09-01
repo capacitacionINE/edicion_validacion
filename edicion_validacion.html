@@ -4,7 +4,7 @@
     <title>Proceso de acompañamiento coyuntural y automatización de la Encuesta Nacional de Empleo</title>
     <meta charset="utf-8" />
     <meta name="author" content="" />
-    <meta name="date" content="2020-08-29" />
+    <meta name="date" content="2020-09-01" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -1214,6 +1214,128 @@ random(mean)
 &lt;img src="https://media.giphy.com/media/uYgYvxxhCf3e8/giphy.gif" width="280" /&gt;
 ]
 
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Para no ponernos nerviosos
+
+Los contenidos de esta clase son más avanzados que los de la sesión anterior, pero no hay motivo para ponernos ansiosos
+
+--
+
+.center[
+&lt;img src="https://media.giphy.com/media/1FMaabePDEfgk/giphy.gif" width="250" /&gt;
+]
+
+--
+
+Es probable que no todo se entienda inmediatamente, pero no hay nada de malo en eso
+
+--
+
+.center[
+&lt;img src="https://media.giphy.com/media/YEongvRqe8sXC/giphy.gif" width="280" &gt;
+] 
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# ¿Por qué usamos funcionales?
+
+*For loops have a bad rap in R because many people believe they are slow, but the real downside of for loops is that they’re very flexible: a loop conveys that you’re iterating, but not what should be done with the results.*
+
+
+*Each functional is tailored for a specific task, so when you recognise the functional you immediately know why it’s being used.*
+
+.center[
+&lt;img src="imagenes/hadley.PNG" width="200" /&gt;
+]
+
+--
+
+**Nota:** un ciclo for puede llegar a ser realmente lento en R, si se usa mal. Usado correctamente, no debería ser peor que una funcional. 
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# ¿Por qué usamos funcionales?
+
+Queremos evitar código difícil de entender y que esconde errores 
+
+
+```r
+datos &lt;-  list(df1 = data.frame(x = c(1, 2, 7)), df2 = data.frame(x = c(3, 4))) 
+datos
+```
+
+```
+## $df1
+##   x
+## 1 1
+## 2 2
+## 3 7
+## 
+## $df2
+##   x
+## 1 3
+## 2 4
+```
+
+
+```r
+i &lt;- 1
+new_data &lt;- vector(length = length(datos), mode = "list")
+for (df in datos) {
+  if (nrow(df) &gt; 2) {
+    new_data[[i]] &lt;- df %&gt;% 
+      mutate(y = x + mean(x) )
+  }
+  i = i + 1
+}
+```
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# ¿Por qué usamos funcionales?
+
+
+Cuando existen *loops* anidados y condiciones más complejas, pueden pasar varias cosas:
+
+- Es muy fácil cometer errores y muy difícil encontrarlos 
+
+- Es posible cometer errores y no darnos cuenta
+
+- Puede ser difícil anticipar el resultado del código
+
+--
+
+Queremos escribir algo como esto
+
+
+```r
+crear_si &lt;- function(df) {
+  if (nrow(df) &gt; 2) {
+     df %&gt;% 
+      mutate(y = x + mean(x) )
+  } 
+}
+
+new_data &lt;- map(datos, crear_si)
+```
+--
+
+ 
 
 ---
 background-image: url("imagenes/fondo2.PNG")
@@ -1271,6 +1393,38 @@ for (i in 1:10) {
 
 --
 
+El valor de `i` irá tomando valores de 1 al 10
+
+
+--
+
+
+```r
+escritores &lt;- c("hemingway", "orwell", "nona fernandez", "faulkner", "harper lee")
+for (escritor in escritores) {
+  print(paste0(escritor, " escribió varias novelas")) 
+}
+```
+
+```
+## [1] "hemingway escribió varias novelas"
+## [1] "orwell escribió varias novelas"
+## [1] "nona fernandez escribió varias novelas"
+## [1] "faulkner escribió varias novelas"
+## [1] "harper lee escribió varias novelas"
+```
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Comprendiendo el "mapeo"
+
+Mapear es llevar algo de un lugar a otro
+
 
 .pull-left[
 &lt;img src="imagenes/funcional.PNG" width="250" /&gt;
@@ -1284,6 +1438,8 @@ Una funcional es una manera diferente de implementar el concepto de iteración
 ]
 
 ]
+
+--
 
 
 ```r
@@ -1311,7 +1467,7 @@ background-position: 100% 0%
 En `R` implementamos funciones del siguiente modo 
 
 ```r
-mi_funcion &lt;- function(x) {
+doblar &lt;- function(x) {
   return(2 * x)
 }
 ```
@@ -1322,12 +1478,16 @@ Para llamar a la función, hacemos lo siguiente
 
 
 ```r
-mi_funcion(3)
+doblar(3)
 ```
 
 ```
 ## [1] 6
 ```
+
+--
+
+Si a alguien le interesa, otro día podemos conversar más sobre funciones 😉
 
 ---
 background-image: url("imagenes/fondo2.PNG")
@@ -1731,6 +1891,35 @@ class: center, middle
 
 
 ## Gracias
+
+
+---
+
+.linea-superior[]
+.linea-inferior[]
+
+
+```r
+concatenar &lt;- function(x, y) {
+  c(x, y)
+}
+
+iterar &lt;- function(x) {
+  map(1:3, concatenar, x = x  )
+}
+
+x &lt;- map(1:2, function(x) {
+  map(1:3, function(y) c(x, y))
+  } 
+)
+
+x &lt;- map(1:2, function(x) {
+  map(1:3, concatenar, x = x  )
+  } 
+)
+
+x &lt;- map(1:2, iterar)
+```
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

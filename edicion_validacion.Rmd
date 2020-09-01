@@ -1120,6 +1120,114 @@ random(mean)
 <img src="https://media.giphy.com/media/uYgYvxxhCf3e8/giphy.gif" width="280" />
 ]
 
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Para no ponernos nerviosos
+
+Los contenidos de esta clase son más avanzados que los de la sesión anterior, pero no hay motivo para ponernos ansiosos
+
+--
+
+.center[
+<img src="https://media.giphy.com/media/1FMaabePDEfgk/giphy.gif" width="250" />
+]
+
+--
+
+Es probable que no todo se entienda inmediatamente, pero no hay nada de malo en eso
+
+--
+
+.center[
+<img src="https://media.giphy.com/media/YEongvRqe8sXC/giphy.gif" width="280" >
+] 
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# ¿Por qué usamos funcionales?
+
+*For loops have a bad rap in R because many people believe they are slow, but the real downside of for loops is that they’re very flexible: a loop conveys that you’re iterating, but not what should be done with the results.*
+
+
+*Each functional is tailored for a specific task, so when you recognise the functional you immediately know why it’s being used.*
+
+.center[
+<img src="imagenes/hadley.PNG" width="200" />
+]
+
+--
+
+**Nota:** un ciclo for puede llegar a ser realmente lento en R, si se usa mal. Usado correctamente, no debería ser peor que una funcional. 
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# ¿Por qué usamos funcionales?
+
+Queremos evitar código difícil de entender y que esconde errores 
+
+```{r, eval=T}
+datos <-  list(df1 = data.frame(x = c(1, 2, 7)), df2 = data.frame(x = c(3, 4))) 
+datos
+```
+
+```{r}
+i <- 1
+new_data <- vector(length = length(datos), mode = "list")
+for (df in datos) {
+  if (nrow(df) > 2) {
+    new_data[[i]] <- df %>% 
+      mutate(y = x + mean(x) )
+  }
+  i = i + 1
+}
+
+```
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# ¿Por qué usamos funcionales?
+
+
+Cuando existen *loops* anidados y condiciones más complejas, pueden pasar varias cosas:
+
+- Es muy fácil cometer errores y muy difícil encontrarlos 
+
+- Es posible cometer errores y no darnos cuenta
+
+- Puede ser difícil anticipar el resultado del código
+
+--
+
+Queremos escribir algo como esto
+
+```{r, eval=F}
+crear_si <- function(df) {
+  if (nrow(df) > 2) {
+     df %>% 
+      mutate(y = x + mean(x) )
+  } 
+}
+
+new_data <- map(datos, crear_si)
+
+```
+--
+
+ 
 
 ---
 background-image: url("imagenes/fondo2.PNG")
@@ -1176,6 +1284,30 @@ for (i in 1:10) {
 
 --
 
+El valor de `i` irá tomando valores de 1 al 10
+
+
+--
+
+```{r, eval=T}
+escritores <- c("hemingway", "orwell", "nona fernandez", "faulkner", "harper lee")
+for (escritor in escritores) {
+  print(paste0(escritor, " escribió varias novelas")) 
+}
+
+```
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Comprendiendo el "mapeo"
+
+Mapear es llevar algo de un lugar a otro
+
 
 .pull-left[
 <img src="imagenes/funcional.PNG" width="250" />
@@ -1189,6 +1321,8 @@ Una funcional es una manera diferente de implementar el concepto de iteración
 ]
 
 ]
+
+--
 
 ```{r}
 triple <- function(x) x * 3 
@@ -1216,12 +1350,16 @@ Para llamar a la función, hacemos lo siguiente
 doblar(3)
 ```
 
+--
+
+Si a alguien le interesa, otro día podemos conversar más sobre funciones 😉
+
 ---
 background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Introducción a funcionales con purrr
+# Calculando promedios con map
 
 Queremos calcular el promedio de varias columnas
 
@@ -1243,7 +1381,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Introducción a funcionales con purrr
+# Variantes de map
 
 En el ejemplo anterior el resultado era una lista genérica.
 
@@ -1271,7 +1409,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Introducción a funcionales con purrr
+# Conflictos entre map y valores retornados
 
 Si existe conflicto entre el vector que le pedimos a `map` y los valores de la función evaluada, obtendremos un error
 
@@ -1565,4 +1703,32 @@ class: center, middle
 ## Gracias
 
 
+---
 
+.linea-superior[]
+.linea-inferior[]
+
+```{r, eval=F}
+
+concatenar <- function(x, y) {
+  c(x, y)
+}
+
+iterar <- function(x) {
+  map(1:3, concatenar, x = x  )
+}
+
+x <- map(1:2, function(x) {
+  map(1:3, function(y) c(x, y))
+  } 
+)
+
+x <- map(1:2, function(x) {
+  map(1:3, concatenar, x = x  )
+  } 
+)
+
+x <- map(1:2, iterar)
+   
+
+```
