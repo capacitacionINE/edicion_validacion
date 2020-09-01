@@ -1302,7 +1302,7 @@ background-position: 100% 0%
 
 --
 
-**Nota:** un ciclo for puede llegar a ser realmente lento en R, si se usa mal. Usado correctamente, no debería ser peor que una funcional. 
+👀 **Nota:** un ciclo for puede llegar a ser realmente lento en R, si se usa mal. Usado correctamente, no debería ser peor que una funcional. 
 
 
 ---
@@ -1450,7 +1450,7 @@ Una funcional es una manera diferente de implementar el concepto de iteración
 
 
 ```r
-triple &lt;- function(x) x * 3 
+triple &lt;- function(x) {x * 3} 
 map(1:3, triple)
 ```
 
@@ -1550,9 +1550,6 @@ En el ejemplo anterior el resultado era una lista genérica.
 - map_dbl
 
 
-
-
-
 ```r
 map_dbl(ingresos, mean) 
 ```
@@ -1619,9 +1616,9 @@ Asigna el resultado de tu código a un objeto llamado df.
 
 --
 
-**Nota 1**: Creé para ustedes la función `normalizacion`. Pueden simplemente, usarla.
+👀**Nota 1**: Hice una plantilla de la función `normalizar`. Ustedes deben completarla
 
-**Nota 2**: Si tienen un problema con `group_by`, echen mano a lo que vimos la semana pasada 
+👀**Nota 2**: Si tienen un problema con `group_by`, echen mano a lo que vimos la semana pasada 
 
 --
 
@@ -1629,7 +1626,7 @@ Asigna el resultado de tu código a un objeto llamado df.
 ```r
 #Función para normalizar
 normalizar &lt;-  function(x) {
-  return( (x - mean(x)) / sd(x) ) 
+  #aquí va tu código
 }
 ```
 
@@ -1658,9 +1655,7 @@ df &lt;- personas %&gt;%
 
 `normalizar` se aplica a las 3 columnas 
 
-Recuerden que `select` por defecto selecciona las variables de agrupación   
-
-
+👀 Recuerden que `select` por defecto selecciona las variables de agrupación   
 
 
 ---
