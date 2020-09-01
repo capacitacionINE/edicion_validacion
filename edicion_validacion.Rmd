@@ -1150,6 +1150,42 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
+# Antes de seguir...
+
+
+¿Alguno de ustedes tiene una idea de qué hace este código?
+
+```{r, eval=F}
+for (i in 1:10) {
+  print(i)
+}
+```
+
+--
+
+El valor de `i` irá tomando valores de 1 al 10
+
+
+--
+
+```{r, eval=T}
+escritores <- c("hemingway", "orwell", "nona fernandez", "faulkner", "harper lee")
+for (escritor in escritores) {
+  print(paste0(escritor, " escribió varias novelas")) 
+}
+
+```
+
+--
+
+Veremos que las funcionales en `R` son simplemente otra manera de implementar la idea de iteración
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
 # ¿Por qué usamos funcionales?
 
 *For loops have a bad rap in R because many people believe they are slow, but the real downside of for loops is that they’re very flexible: a loop conveys that you’re iterating, but not what should be done with the results.*
@@ -1173,12 +1209,15 @@ background-position: 100% 0%
 
 # ¿Por qué usamos funcionales?
 
-Queremos evitar código difícil de entender y que esconde errores 
 
 ```{r, eval=T}
 datos <-  list(df1 = data.frame(x = c(1, 2, 7)), df2 = data.frame(x = c(3, 4))) 
 datos
 ```
+
+--
+
+Queremos evitar código difícil de entender y que esconde errores 
 
 ```{r}
 i <- 1
@@ -1225,7 +1264,7 @@ crear_si <- function(df) {
 new_data <- map(datos, crear_si)
 
 ```
---
+
 
  
 
@@ -1234,7 +1273,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Introducción a funcionales con purrr
+# Funcionales con R base
 
 R base ofrece maneras de implementar funcionales:
 
@@ -1266,45 +1305,13 @@ Para usar funcionales en estilo tidyverse contamos con el paquete `purrr`
 
 ]
 
----
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Introducción a funcionales con purrr
-
-
-¿Alguno de ustedes tiene una idea de qué hace este código?
-
-```{r, eval=F}
-for (i in 1:10) {
-  print(i)
-}
-```
-
---
-
-El valor de `i` irá tomando valores de 1 al 10
-
-
---
-
-```{r, eval=T}
-escritores <- c("hemingway", "orwell", "nona fernandez", "faulkner", "harper lee")
-for (escritor in escritores) {
-  print(paste0(escritor, " escribió varias novelas")) 
-}
-
-```
-
-
 
 ---
 background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Comprendiendo el "mapeo"
+# ¿Por qué hablamos de mapas?
 
 Mapear es llevar algo de un lugar a otro
 
@@ -1409,7 +1416,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Conflictos entre map y valores retornados
+# Conflictos
 
 Si existe conflicto entre el vector que le pedimos a `map` y los valores de la función evaluada, obtendremos un error
 
